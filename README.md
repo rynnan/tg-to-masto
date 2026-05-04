@@ -1,10 +1,11 @@
 # tg-to-masto
-A bot that copies telegram channel posts (and optionally comments) to mastodon
-
+A bot that copies telegram channel posts (and optionally comments from the linked discussion group) to mastodon.
+Supports independent control over new post mirroring and historical backlog drip.
 Please be aware of possible TOS issues.
 
-Mirrors a Telegram channel (and its linked discussion group) to Mastodon.
-Supports independent control over new post mirroring and historical backlog drip.
+This started as a personal tool. To speed up implementation, portions were generated with assistance from Claude AI.
+
+Enjoy.
 
 ---
 ## Files
