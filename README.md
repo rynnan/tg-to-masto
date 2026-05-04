@@ -9,14 +9,16 @@ Supports independent control over new post mirroring and historical backlog drip
 ---
 ## Files
 
-| File                 | Purpose 
+## Files
 
-| `bot.py`             | The bot — run this continuously 
-| `shared.py`          | Shared helpers — required by bot.py 
-| `.env`               | Your credentials and settings — never commit this 
-| `{APP_NAME}.db`      | SQLite database tracking post state (auto-created) 
-| `{APP_NAME}.session` | Telegram login session (auto-created, keep private) 
-| `{APP_NAME}.log`     | Log file (auto-created) 
+| File | Purpose |
+|------|---------|
+| `bot.py` | The bot — run this continuously |
+| `shared.py` | Shared helpers — required by bot.py |
+| `.env` | Your credentials and settings — never commit this |
+| `{APP_NAME}.db` | SQLite database tracking post state (auto-created) |
+| `{APP_NAME}.session` | Telegram login session (auto-created, keep private) |
+| `{APP_NAME}.log` | Log file (auto-created) |
 
 File locations are controlled by `APP_NAME` and `DB_PATH`.
 
@@ -75,12 +77,12 @@ the archive queue, registers event handlers, then runs the configured loops.
 
 ### Command-line flags
 
-| Parameter | Effect
-
-| `--now` | Post the next item in the queue immediately, then run normally
-| `--now N` | Post the next N item(s) in the queue immediately, then run normally
-| `--force n` | Post telegram message number n regardless of status, then exit (no db update)
-| `--review` | Lists all items in the db that need manual review
+| Parameter | Effect |
+|------|--------|
+| `--now` | Post the next item in the queue immediately, then run normally |
+| `--now N` | Post the next N item(s) in the queue immediately, then run normally |
+| `--force n` | Post telegram message number n regardless of status, then exit (no db update) |
+| `--review` | Lists all items in the db that need manual review |
 
 ---
 
@@ -156,13 +158,14 @@ Longer absences resume from the normal schedule without catching up.
 
 ### The five modes
 
-| NEW_POSTS | ARCHIVE | Effect 
 
-| direct    | ignore  | Simple live mirror. New posts go out immediately. No backlog. 
-| buffered  | ignore  | Paced live mirror. New posts released on schedule. No backlog. 
-| direct    | replay  | Backlog drips on DRIP_TIMES. New posts go out immediately in parallel. 
-| buffered  | replay  | Both paced on their own independent schedules. 
-| queued    | replay  | New posts join the back of the archive queue, dripped on DRIP_TIMES. 
+| NEW_POSTS | ARCHIVE | Effect |
+|-----------|---------|--------|
+| direct | ignore | Simple live mirror. New posts go out immediately. No backlog. |
+| buffered | ignore | Paced live mirror. New posts released on schedule. No backlog. |
+| direct | replay | Backlog drips on DRIP_TIMES. New posts go out immediately in parallel. |
+| buffered | replay | Both paced on their own independent schedules. |
+| queued | replay | New posts join the back of the archive queue, dripped on DRIP_TIMES. |
 
 Note: `NEW_POSTS=queued` with `ARCHIVE=ignore` is a soft error. The bot
 warns you and treats it as `direct`.
