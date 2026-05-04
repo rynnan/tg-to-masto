@@ -291,12 +291,12 @@ If a Mastodon post goes missing externally, the DB row is flagged as
 
 ## Database status values
 
-| Status | Meaning 
-
-| pending      | Not yet posted to Mastodon 
-| posted       | Successfully mirrored 
-| deleted      | Deleted on both sides 
-| needs_review | Something went wrong — check the log 
+| Status | Meaning |
+|------|--------|
+| pending      | Not yet posted to Mastodon |
+| posted       | Successfully mirrored |
+| deleted      | Deleted on both sides |
+| needs_review | Something went wrong — check the log |
 
 ---
 
