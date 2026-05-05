@@ -1,5 +1,5 @@
 # tg-to-masto
-A bot that copies telegram channel posts (and optionally comments from the linked discussion group) to mastodon.
+A bot that copies Telegram channel posts (and optionally comments from the linked discussion group) to Mastodon.
 Supports independent control over new post mirroring and historical backlog drip.
 Please be aware of possible TOS issues.
 
@@ -8,7 +8,6 @@ This started as a personal tool. To speed up implementation, portions were gener
 Enjoy.
 
 ---
-## Files
 
 ## Files
 
@@ -24,6 +23,7 @@ Enjoy.
 File locations are controlled by `APP_NAME` and `DB_PATH`.
 
 ---
+
 ## Setup
 
 ### 1. Install dependencies
@@ -79,11 +79,11 @@ the archive queue, registers event handlers, then runs the configured loops.
 ### Command-line flags
 
 | Parameter | Effect |
-|------|--------|
-| `--now` | Post the next item in the queue immediately, then run normally |
-| `--now N` | Post the next N item(s) in the queue immediately, then run normally |
-| `--force n` | Post telegram message number n regardless of status, then exit (no db update) |
-| `--review` | Lists all items in the db that need manual review |
+|-----------|--------|
+| `--now` | Fire one scheduler slot immediately, then run normally |
+| `--now N` | Fire N scheduler slots immediately, then run normally |
+| `--force n` | Post Telegram message number n regardless of status, then exit (DB not updated) |
+| `--review` | List all items in the DB that need manual review, then exit |
 
 ---
 
@@ -93,10 +93,10 @@ the archive queue, registers event handlers, then runs the configured loops.
 
 ```
 TG_API_ID=12345678
-TG_API_HASH=your_api_hash
-TG_CHANNEL=@your_channel
-MASTO_API_BASE=https://yourinstance.social
-MASTO_ACCESS_TOKEN=your_token
+TG_API_HASH="your_api_hash"
+TG_CHANNEL="@your_channel"
+MASTO_API_BASE="https://yourinstance.social"
+MASTO_ACCESS_TOKEN="your_token"
 ```
 
 ### App identity and file locations
@@ -105,14 +105,14 @@ MASTO_ACCESS_TOKEN=your_token
 # Base name for .db, .session, and .log files.
 # Spaces become underscores in filenames.
 # Default: "telegram mirror" -> telegram_mirror.db / .session / .log
-APP_NAME=my channel mirror
+APP_NAME="my channel mirror"
 
 # Directory for all app files. Defaults to working directory.
 # Created automatically if it does not exist.
-# DB_PATH=/path/to/data
+# DB_PATH="data"
 ```
 
-Note: on Windows use forward slashes or relative paths (e.g. `DB_PATH=data`).
+Note: on Windows use forward slashes or relative paths (e.g. `DB_PATH="data"`).
 Absolute Windows paths (`C:\data`) will not work if you move the bot to Linux.
 
 ### Discussion group
@@ -122,6 +122,25 @@ Absolute Windows paths (`C:\data`) will not work if you move the bot to Linux.
 # (empty string) = disable group mirroring entirely
 # @handle or id  = use this specific group
 TG_GROUP=auto
+```
+
+### Instance / format settings
+
+Queried automatically from your Mastodon instance at startup.
+
+```
+# Post length: auto = query instance (default), or a number to override.
+# Cannot exceed the instance limit — the bot will warn and use the instance value.
+POST_LENGTH=auto
+
+# Post format:
+#   auto     = detect from instance API (default)
+#   markdown = use text/markdown; falls back to plain if instance doesn't support it
+#   plain    = always post as plaintext, stripping all formatting
+MASTODON_FORMAT=auto
+
+# Max file upload size in bytes: auto = query instance (default), or a number.
+MAX_FILE_SIZE=auto
 ```
 
 ### New post behaviour
@@ -135,8 +154,8 @@ Controls what happens when a new post arrives in your Telegram channel.
 NEW_POSTS=direct
 
 # Required when NEW_POSTS=buffered:
-POST_TIMES=10:00,18:00   # HH:MM comma-separated, local time, midnight slots work
-POST_COUNT=1             # posts per slot
+POST_TIMES="10:00,18:00"   # HH:MM comma-separated, local time, midnight slots work
+POST_COUNT=1               # posts per slot
 ```
 
 ### Archive / backlog behaviour
@@ -149,8 +168,8 @@ Controls whether and how historical channel posts are dripped out.
 ARCHIVE=ignore
 
 # Required when ARCHIVE=replay:
-DRIP_TIMES=10:00,18:00,02:00   # HH:MM comma-separated, local time
-DRIP_COUNT=1                    # posts per slot
+DRIP_TIMES="10:00,18:00,02:00"   # HH:MM comma-separated, local time
+DRIP_COUNT=1                      # posts per slot
 ```
 
 Times past midnight (e.g. 02:00) work correctly. If the bot was asleep and
@@ -158,7 +177,6 @@ missed a slot within the last 24 hours, it fires immediately on wake.
 Longer absences resume from the normal schedule without catching up.
 
 ### The five modes
-
 
 | NEW_POSTS | ARCHIVE | Effect |
 |-----------|---------|--------|
@@ -177,19 +195,6 @@ The bot exits with a clear error if:
 - `NEW_POSTS=buffered` but `POST_TIMES` or `POST_COUNT` is missing
 - `ARCHIVE=replay` but `DRIP_TIMES` or `DRIP_COUNT` is missing
 
-### Post content
-
-```
-# Hashtags appended to every channel post (not group comments).
-# Must be quoted because of the # characters.
-POST_TAGS="#Tag1 #Tag2 #Tag3"
-
-# Accounts to mirror from the discussion group.
-# Comma-separated, quoted for names with spaces.
-# Empty = mirror from main channel identity only (recommended default).
-MIRROR_GROUP_SENDERS=
-```
-
 ### Reply behaviour
 
 Controls how Telegram self-replies (replies to your own channel posts) appear on Mastodon.
@@ -200,31 +205,40 @@ Controls how Telegram self-replies (replies to your own channel posts) appear on
 REPLY_MODE=standalone
 
 # Token shown before the link in standalone mode.
-# Default: <-   Other examples: ↩  re:  via  →
-REPLY_TOKEN=<-
+# Default: "<-"   Other examples: "↩"  "re:"  "via"  "→"
+REPLY_TOKEN="<-"
 ```
 
 In `standalone` mode the post appears in followers' timelines normally.
 In `thread` mode it appears as a reply — visible on your profile but not
 in most followers' timelines by default.
 
+### Post content
+
+```
+# Hashtags appended to every channel post (not group comments).
+# Must be quoted because of the # characters.
+POST_TAGS="#Tag1 #Tag2 #Tag3"
+
+# Accounts to mirror from the discussion group.
+# Comma-separated, quoted for names with spaces.
+# Empty = mirror from main channel identity only (recommended default).
+MIRROR_GROUP_SENDERS=""
+```
+
 ### Split style
 
 When a post exceeds the character limit, it is split into a reply chain.
-The following settings control how splits are marked.
 
 ```
-# Marker appended to chunks that continue (default: ...)
+# Marker appended to chunks that continue. Default: "..."
 SPLIT_SUFFIX="..."
 
-# Marker prepended to continuation chunks / 2nd post onwards (default: ...)
+# Marker prepended to continuation chunks. Default: "..."
 SPLIT_PREFIX="..."
 
-# Chunk position indicator. %n = current, %N = total. Default: (%n/%N)
-# Examples:
-#   SPLIT_INDICATOR="[%n/%N]"
-#   SPLIT_INDICATOR="post %n of %N"
-#   SPLIT_INDICATOR="%n/%N"
+# Chunk position indicator. %n = current, %N = total. Default: "(%n/%N)"
+# Examples: "[%n/%N]"   "post %n of %N"   "%n/%N"
 SPLIT_INDICATOR="(%n/%N)"
 ```
 
@@ -242,7 +256,7 @@ This matches what you see in Telegram — one album is one post.
 
 Telegram albums (multiple images sent together) are posted as a single
 Mastodon post with up to 4 images. Larger albums are split into a reply
-chain: (1/3), (2/3), (3/3) — or whatever SPLIT_INDICATOR is set to.
+chain with SPLIT_INDICATOR position markers.
 
 ### Long captions
 
@@ -286,18 +300,19 @@ delete logic applies. Group comments do not get hashtags.
 ### Needs review
 
 If a Mastodon post goes missing externally, the DB row is flagged as
-`needs_review` and a `[NEEDS REVIEW]` error is logged.
+`needs_review` and a `[NEEDS REVIEW]` error is logged. Use `--review`
+to list all affected posts with links.
 
 ---
 
 ## Database status values
 
 | Status | Meaning |
-|------|--------|
+|--------|---------|
 | pending      | Not yet posted to Mastodon |
 | posted       | Successfully mirrored |
 | deleted      | Deleted on both sides |
-| needs_review | Something went wrong — check the log |
+| needs_review | Something went wrong — use --review for details |
 
 ---
 
@@ -310,3 +325,5 @@ If a Mastodon post goes missing externally, the DB row is flagged as
   The `.session` file can be kept.
 - All three files share the base name from `APP_NAME` and live in the
   directory set by `DB_PATH`.
+- On Windows, use forward slashes or relative paths for `DB_PATH`.
+  Absolute Windows paths will not work on Linux.
