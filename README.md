@@ -1,9 +1,11 @@
 # tg-to-masto
-A bot that copies Telegram channel posts (and optionally comments from the linked discussion group) to Mastodon.
+A userbot that copies Telegram channel posts (and optionally comments from the linked discussion group) to Mastodon.
 Supports independent control over new post mirroring and historical backlog drip.
-Please be aware of possible TOS issues.
 
 This started as a personal tool. To speed up implementation, portions were generated with assistance from Claude AI.
+The bot runs with full user access (userbot). I plan to revisit that concept in the next release.
+
+Please be aware of possible TOS issues.
 
 Enjoy.
 
