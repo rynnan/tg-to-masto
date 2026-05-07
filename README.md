@@ -3,8 +3,7 @@ A userbot that copies Telegram channel posts (and optionally comments from the l
 Supports independent control over new post mirroring and historical backlog drip.
 
 This started as a personal tool. To speed up implementation, portions were generated with assistance from Claude AI.
-The bot runs with full user access (userbot). I plan to revisit that concept in the next release.
-
+The bot runs with full user access (userbot) which is required for edit and deletion notifications.
 Please be aware of possible TOS issues.
 
 Enjoy.
